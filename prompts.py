@@ -1,7 +1,7 @@
 PROMPT_NER_DISTANCE_WHERE = """
 Please extract the following fields from the user's query:
 
-1. `LOCATION_VECTOR_DB_PROMPT`: Provide a representation of the location mentioned in the user's query. This should correspond to a specific place or landmark (e.g., "Dworzec Wrocław Główny"). It should have been extracted in OSM format, e.g., 'amenity': 'restaurant', 'cuisine': 'polish'. if you can find address also pass it 
+1. `LOCATION_VECTOR_DB_PROMPT`: Provide a representation of the location mentioned in the user's query. This should correspond to a specific place or landmark (e.g., "Dworzec Wrocław Główny"). It should have been extracted in OSM format, e.g., 'amenity': 'restaurant', 'cuisine': 'polish'. if you can find address also pass it with prefix addr:city, addr:street, addr:housenumber, addr:postcode.
    
 2. `PLACE_VECTOR_DB_PROMPT`: Provide a representation of the type of place or business mentioned in the query (e.g., "restaurant", "hotel", etc.). In the given example, it would be a "Polish restaurant". It should have been extracted in OSM format, e.g., 'amenity': 'restaurant', 'cuisine': 'polish'.
 
@@ -35,7 +35,7 @@ Expected Extraction:
 
 
 PROMPT_END = """
-Provide short suummarization based on user query and the documents provided. Recommend the most relevant document.
+Provide short suummarization based on user query and the documents provided. Recommend the most relevant document. Write it short and concise.
 
 QUERY: "{query}"
 

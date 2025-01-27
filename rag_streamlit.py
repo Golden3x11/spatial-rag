@@ -150,8 +150,13 @@ if st.button("Search"):
                 k=5,
                 filter=generate_square_filter((latitude, longitude), radius_km=distance),
             )
-            documents = documents_to_string(results)
-            answer = summarize_results(query, documents)
+
+            if not results:
+                st.write("No results found.")
+                answer = "No results found. Rewrite your prompt and try again."
+            else:
+                documents = documents_to_string(results)
+                answer = summarize_results(query, documents)
 
             
     st.write("## Recommendation:")

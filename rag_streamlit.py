@@ -10,6 +10,8 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from dotenv import load_dotenv
 from prompts import PROMPT_NER_DISTANCE_WHERE, PROMPT_FIND_LATITUDE_LONGITUDE, PROMPT_END
 import textwrap
+import folium
+from streamlit_folium import folium_static
 
 load_dotenv()
 
@@ -120,30 +122,59 @@ booksy_query = "Find ma a hairdresser that costs less than 100 PLN for a men's h
 query = st.text_area("Enter your query:", booksy_query if option == "Booksy Finder" else default_query, height=100)
 
 if st.button("Search"):
-    with st.expander("Entity Extraction - Details"):
-        st.subheader("Extracted Entities")
-        location, place, distance = extract_entities_from_documents(query, None)
-        st.write(f"**Location:** {location}")
-        st.write(f"**Place:** {place}")
-        st.write(f"**Distance:** {distance} km")
+    with st.spinner("Processing Entity Extraction..."):
+        with st.expander("Entity Extraction - Details"):
+            st.subheader("Extracted Entities")
+            location, place, distance = extract_entities_from_documents(query, None)
+            st.write(f"**Location:** {location}")
+            st.write(f"**Place:** {place}")
+            st.write(f"**Distance:** {distance} km")
 
-    with st.expander("Latitude and Longitude Extraction - Details"):
-        st.subheader("Extracted Coordinates")
-        results = location_vector_store.similarity_search(location, k=5)
-        documents = documents_to_string(results)
-        latitude, longitude = extract_lat_lon_from_documents(location, documents)
-        st.write(f"**Latitude:** {latitude}")
-        st.write(f"**Longitude:** {longitude}")
+    with st.spinner("Processing Latitude and Longitude Extraction..."):
+        with st.expander("Latitude and Longitude Extraction - Details"):
+            st.subheader("Extracted Coordinates")
+            results = location_vector_store.similarity_search(location, k=5)
+            documents = documents_to_string(results)
+            latitude, longitude = extract_lat_lon_from_documents(location, documents)
+            st.write(f"**Latitude:** {latitude}")
+            st.write(f"**Longitude:** {longitude}")
 
-    with st.expander("Summary - Details"):
-        st.subheader("Summary of Results")
-        vector_store = location_vector_store if option == "Location Finder" else booksy_vector_store
-        results = vector_store.similarity_search(
-            place,
-            k=5,
-            filter=generate_square_filter((latitude, longitude), radius_km=distance),
-        )
-        documents = documents_to_string(results)
-        answer = summarize_results(query, documents)
+    results = None
+    
+    with st.spinner("Processing Summary..."):
+        with st.expander("Summary - Details"):
+            st.subheader("Summary of Results")
+            vector_store = location_vector_store if option == "Location Finder" else booksy_vector_store
+            results = vector_store.similarity_search(
+                place,
+                k=5,
+                filter=generate_square_filter((latitude, longitude), radius_km=distance),
+            )
+            documents = documents_to_string(results)
+            answer = summarize_results(query, documents)
+
+            
     st.write("## Recommendation:")
     st.write(answer)
+
+    with st.expander("Map - Details"):
+        # Create a map centered at the center location
+        center = (latitude, longitude)
+        m = folium.Map(location=center, zoom_start=15)
+
+        # Add markers for each result
+        for res in results:
+            folium.Marker(
+                location=[res.metadata["lattitude"], res.metadata["longitude"]],
+                popup=res.metadata["name"],
+            ).add_to(m)
+
+        # Add a marker for the center location
+        folium.Marker(
+            location=center,
+            popup="Center Location",
+            icon=folium.Icon(color="red"),
+        ).add_to(m)
+
+        # Display the map in the Streamlit app
+        folium_static(m)

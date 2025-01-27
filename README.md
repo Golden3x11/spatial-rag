@@ -10,36 +10,6 @@ This project provides a tool to find locations and services using natural langua
 - **Latitude and Longitude Extraction**: Extracts coordinates from documents.
 - **Summary Generation**: Summarizes results and provides recommendations.
 
-## Requirements
-
-- Python 3.10
-- Required Python packages (install using `pip install -r requirements.txt`):
-  - torch
-  - numpy
-  - streamlit
-  - faiss
-  - langchain_community
-  - langchain_huggingface
-  - python-dotenv
-
-## Setup
-
-1. Clone the repository:
-   ```sh
-   git clone <repository_url>
-   cd <repository_directory>
-   ```
-
-2. Install the required packages:
-   ```sh
-   pip install -r requirements.txt
-   ```
-
-3. Create a `.env` file in the project root and add your API key:
-   ```env
-   CLARIN_KEY=your_clarin_api_key
-   ```
-
 ## Usage
 
 ### Running the Streamlit App

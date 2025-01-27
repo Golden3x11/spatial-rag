@@ -25,6 +25,7 @@ If it is not explicitly mentioned, try to extract it from the metadata of the do
 QUERY: "{query}"
 
 DOCUMENTS:
+
 {documents}
 
 Expected Extraction:
@@ -35,11 +36,13 @@ Expected Extraction:
 
 
 PROMPT_END = """
-Provide short suummarization based on user query and the documents provided. Recommend the most relevant document. Write it short and concise.
+Provide a short recommendation based on user query and the documents provided. 
+Mention all documents. Write it short and concise.
 
 QUERY: "{query}"
 
 DOCUMENTS:
+
 {documents}
 
 RECOMMENDATION: 
